@@ -11,7 +11,7 @@
 .\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 .\" GNU General Public License for more details.
 .\"
-.TH PATOOL "1" "February 2013" "patool"
+.TH PATOOL "1" "July 2013" "patool"
 .SH NAME
 patool - portable archive file manager
 .SH SYNOPSIS
@@ -57,7 +57,7 @@ Existing files are never overwritten.
 .IP "\(bu" 4
 The original archive will never be removed.
 .IP "\(bu" 4
-Files outside the outut directory will never be created. This relies on
+Files outside the output directory will never be created. This relies on
 archive program options to prevent unpacking of files with an absolute
 path name (eg. \fB\-\-no\-absolute\-filenames\fP for \fBcpio(1)\fP).
 .PP
@@ -129,7 +129,7 @@ For example:
   \fBpatool \-\-help\fP - display help for patool
   \fBpatool extract \-\-help\fP - display help for the extract command
 .SH SHELL ALIASES
-Aliases save some typing:
+When running under a Unix shell the following aliases can be defined to save some typing:
   \fBalias pl='patool list'\fP
   \fBalias px='patool extract'\fP
   \fBalias pc='patool create'\fP

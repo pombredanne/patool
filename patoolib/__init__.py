@@ -21,7 +21,8 @@ import os
 import shutil
 import stat
 import importlib
-from . import util
+# PEP 396
+from .configuration import Version as __version__
 __all__ = ['list_formats', 'list_archive', 'extract_archive', 'test_archive',
     'create_archive', 'diff_archives', 'search_archive', 'repack_archive']
 
@@ -43,6 +44,7 @@ ArchiveCompressions = ('bzip2', 'compress', 'gzip', 'lzip', 'lzma', 'xz')
 
 # Map MIME types to archive format
 ArchiveMimetypes = {
+    'application/gzip': 'gzip',
     'application/java-archive': 'zip',
     'application/rar': 'rar',
     'application/vnd.ms-cab-compressed': 'cab',
@@ -268,6 +270,8 @@ ProgramModules = {
     'extract_chmlib': 'chmlib',
 }
 
+
+from . import util
 
 def get_archive_format (filename):
     """Detect filename archive format and optional compression."""

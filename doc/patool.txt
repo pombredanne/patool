@@ -55,7 +55,7 @@ COMMANDS
 
        ·   The original archive will never be removed.
 
-       ·   Files  outside  the  outut directory will never be created.
+       ·   Files  outside  the output directory will never be created.
            This relies on archive program options to prevent unpacking
            of  files  with  an  absolute  path  name  (eg.  --no-abso‐
            lute-filenames for cpio(1)).
@@ -135,7 +135,8 @@ HELP OPTION
          patool extract --help - display help for the extract command
 
 SHELL ALIASES
-       Aliases save some typing:
+       When running under a Unix shell the following  aliases  can  be
+       defined to save some typing:
          alias pl='patool list'
          alias px='patool extract'
          alias pc='patool create'
@@ -149,4 +150,4 @@ COPYRIGHT
 
 
 
-patool                       February 2013                   PATOOL(1)
+patool                         July 2013                     PATOOL(1)

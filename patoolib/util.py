@@ -23,7 +23,7 @@ import mimetypes
 import tempfile
 import time
 import traceback
-from . import configuration
+from . import configuration, ArchiveMimetypes, ArchiveCompressions
 try:
     from shutil import which
 except ImportError:
@@ -36,10 +36,10 @@ except ImportError:
         of os.environ.get("PATH"), or can be overridden with a custom search
         path.
         """
-        # Check that a given file can be accessed with the correct mode.
-        # Additionally check that `file` is not a directory, as on Windows
-        # directories pass the os.access check.
         def _access_check(fn, mode):
+            """Check that a given file can be accessed with the correct mode.
+            Additionally check that `fn` is not a directory, as on Windows
+            directories pass the os.access check."""
             return (os.path.exists(fn) and os.access(fn, mode)
                     and not os.path.isdir(fn))
         # If we're given a path with a directory part, look it up directly rather
@@ -226,7 +226,7 @@ def guess_mime (filename):
 
 
 Encoding2Mime = {
-    'gzip': "application/x-gzip",
+    'gzip': "application/gzip",
     'bzip2': "application/x-bzip2",
     'compress': "application/x-compress",
     'lzma': "application/x-lzma",
@@ -234,6 +234,8 @@ Encoding2Mime = {
     'xz': "application/x-xz",
 }
 Mime2Encoding = dict([(_val, _key) for _key, _val in Encoding2Mime.items()])
+# libmagic before version 5.14 identified .gz files as application/x-gzip
+Mime2Encoding['application/x-gzip'] = 'gzip'
 
 
 def guess_mime_mimedb (filename):
@@ -243,7 +245,6 @@ def guess_mime_mimedb (filename):
     mime, encoding = None, None
     if mimedb is not None:
         mime, encoding = mimedb.guess_type(filename, strict=False)
-    from . import ArchiveMimetypes, ArchiveCompressions
     if mime not in ArchiveMimetypes and encoding in ArchiveCompressions:
         # Files like 't.txt.gz' are recognized with encoding as format, and
         # an unsupported mime-type like 'text/plain'. Fix this.
@@ -260,7 +261,7 @@ def guess_mime_file (filename):
     """
     mime, encoding = None, None
     base, ext = os.path.splitext(filename)
-    if ext.lower() in ('.lzma', '.alz', '.lrz'):
+    if ext.lower() in ('.alz',):
         # let mimedb recognize these extensions
         return mime, encoding
     if os.path.isfile(filename):
@@ -269,6 +270,27 @@ def guess_mime_file (filename):
             mime, encoding = guess_mime_file_mime(file_prog, filename)
             if mime is None:
                 mime = guess_mime_file_text(file_prog, filename)
+                encoding = None
+    if mime in Mime2Encoding:
+        # try to look inside compressed archives
+        cmd = [file_prog, "--brief", "--mime", "--uncompress", filename]
+        try:
+            outparts = backtick(cmd).strip().split(";")
+        except OSError:
+            # ignore errors, as file(1) is only a fallback
+            return mime, encoding
+        mime2 = outparts[0].split(" ", 1)[0]
+        if mime2 in ('application/x-empty', 'application/octet-stream'):
+            # The uncompressor program file(1) uses is not installed
+            # or is not able to uncompress.
+            # Try to get mime information from the file extension.
+            mime2, encoding2 = guess_mime_mimedb(filename)
+            if mime2 in ArchiveMimetypes:
+                mime = mime2
+                encoding = encoding2
+        elif mime2 in ArchiveMimetypes:
+            mime = mime2
+            encoding = get_file_mime_encoding(outparts)
     return mime, encoding
 
 
@@ -282,27 +304,7 @@ def guess_mime_file_mime (file_prog, filename):
         mime = backtick(cmd).strip()
     except OSError:
         # ignore errors, as file(1) is only a fallback
-        return mime, encoding
-    from . import ArchiveMimetypes
-    if mime in Mime2Encoding:
-        # try to look inside compressed archives
-        cmd = [file_prog, "--brief", "--mime", "--uncompress", filename]
-        try:
-            outparts = backtick(cmd).strip().split(";")
-        except OSError:
-            # ignore errors, as file(1) is only a fallback
-            return mime, encoding
-        mime2 = outparts[0].split(" ", 1)[0]
-        if mime2 == 'application/x-empty':
-            # The uncompressor program file(1) uses is not installed.
-            # Try to get mime information from the file extension.
-            mime2, encoding2 = guess_mime_mimedb(filename)
-            if mime2 in ArchiveMimetypes:
-                mime = mime2
-                encoding = encoding2
-        elif mime2 in ArchiveMimetypes:
-            mime = mime2
-            encoding = get_file_mime_encoding(outparts)
+        pass
     if mime not in ArchiveMimetypes:
         mime, encoding = None, None
     return mime, encoding
@@ -329,6 +331,8 @@ FileText2Mime = {
     "ASCII cpio archive": "application/x-cpio",
     "Debian binary package": "application/x-debian-package",
     "gzip compressed data": "application/x-gzip",
+    "LZMA compressed data": "application/x-lzma",
+    "LRZIP compressed data": "application/x-lrzip",
     "lzop compressed data": "application/x-lzop",
     "Microsoft Cabinet archive data": "application/vnd.ms-cab-compressed",
     "RAR archive data": "application/x-rar",
@@ -359,7 +363,7 @@ def guess_mime_file_text (file_prog, filename):
         return None
     # match output against known strings
     for matcher, mime in FileText2Mime.items():
-        if output.startswith(matcher):
+        if output.startswith(matcher) and mime in ArchiveMimetypes:
             return mime
     return None
 

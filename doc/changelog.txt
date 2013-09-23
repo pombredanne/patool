@@ -1,4 +1,22 @@
-1.2 "" (released xx.xx.2013)
+1.4 (released 2.9.2013)
+
+* Add missing GZIP creation support for 7z modules.
+  Closes: GH bug #6
+
+
+1.3 (released 19.7.2013)
+
+* Add patoolib.__version__ (see PEP 396).
+  Closes: GH bug #3
+* Improved detection of LZMA and LRZIP files with file(1).
+* Add missing patoolib.programs to Windows installer.
+  Closes: GH bug #5
+
+
+1.2 (released 27.6.2013)
+
+* Fix detection of *.gz with newer libmagic versions.
+  Closes: GH bug #2
 
 
 1.1 "Clerks" (released 7.4.2013)

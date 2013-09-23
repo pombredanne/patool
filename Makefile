@@ -9,14 +9,15 @@ ARCHIVE_SOURCE:=$(LAPPNAME)-$(VERSION).tar.gz
 ARCHIVE_WIN32:=$(LAPPNAME)-$(VERSION).exe
 GITUSER:=wummel
 GITREPO:=$(LAPPNAME)
-WEB_META:=doc/web/app.yaml
+WEBPAGE:=$(HOME)/public_html/patool-webpage.git
+WEBMETA:=doc/web/app.yaml
 DEBUILDDIR:=$(HOME)/projects/debian/official
 DEBORIGFILE:=$(DEBUILDDIR)/$(LAPPNAME)_$(VERSION).orig.tar.gz
 DEBPACKAGEDIR:=$(DEBUILDDIR)/$(LAPPNAME)-$(VERSION)
 # Pytest options:
 # --resultlog: write test results in file
 # -s: do not capture stdout/stderr (some tests fail otherwise)
-PYTESTOPTS?=--resultlog=testresults.txt -s --durations=0
+PYTESTOPTS?=--resultlog=testresults.txt -s
 # which test modules to run
 TESTS ?= tests/
 # set test options
@@ -35,17 +36,19 @@ sign:
 	[ -f dist/$(ARCHIVE_WIN32).asc ] || gpg --detach-sign --armor dist/$(ARCHIVE_WIN32)
 
 upload:
-	github-upload $(GITUSER) $(GITREPO) \
-	  dist/$(ARCHIVE_SOURCE) dist/$(ARCHIVE_WIN32) \
-	  dist/$(ARCHIVE_SOURCE).asc dist/$(ARCHIVE_WIN32).asc
+	cp dist/$(ARCHIVE_SOURCE) dist/$(ARCHIVE_WIN32) \
+	  dist/$(ARCHIVE_SOURCE).asc dist/$(ARCHIVE_WIN32).asc \
+	  $(WEBPAGE)/dist
 
 homepage:
 # update metadata
-	@echo "version: \"$(VERSION)\"" > $(WEB_META)
-	@echo "name: \"$(APPNAME)\"" >> $(WEB_META)
-	@echo "lname: \"$(LAPPNAME)\"" >> $(WEB_META)
-	@echo "maintainer: \"$(MAINTAINER)\"" >> $(WEB_META)
-	@echo "author: \"$(AUTHOR)\"" >> $(WEB_META)
+	@echo "version: \"$(VERSION)\"" > $(WEBMETA)
+	@echo "name: \"$(APPNAME)\"" >> $(WEBMETA)
+	@echo "lname: \"$(LAPPNAME)\"" >> $(WEBMETA)
+	@echo "maintainer: \"$(MAINTAINER)\"" >> $(WEBMETA)
+	@echo "author: \"$(AUTHOR)\"" >> $(WEBMETA)
+	git add $(WEBMETA)
+	git cm "Updated web meta data."
 # relase website
 	$(MAKE) -C doc/web release
 

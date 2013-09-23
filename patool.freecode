@@ -1,11 +1,10 @@
 Project: patool
-Version: 1.1
+Version: 1.4
 Hide: N
 Website-URL: http://wummel.github.io/patool/
 Changelog-URL: https://github.com/wummel/patool/blob/master/doc/changelog.txt
-Tar/GZ-URL: https://github.com/downloads/wummel/patool/patool-${version}.tar.gz
+Tar/GZ-URL: http://wummel.github.io/patool/dist/patool-${version}.tar.gz
 GIT-Tree-URL: https://github.com/wummel/patool.git
-Windows-installer-URL: http://github.com/downloads/wummel/patool/patool-${version}.win32.exe
+Windows-installer-URL: http://wummel.github.io/patool/dist/patool-${version}.win32.exe
 
-An error with repacking compressed tar archives with 7z has been
-fixed. Support for the zopfli compressor has been added.
+GZIP creation support for 7z modules has been added.
