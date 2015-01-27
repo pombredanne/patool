@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2013 Bastian Kleineidam
+# Copyright (C) 2010-2014 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -129,6 +129,9 @@ def add_mimedb_data(mimedb):
     add_mimetype(mimedb, 'audio/flac', '.flac')
     add_mimetype(mimedb, 'application/x-chm', '.chm')
     add_mimetype(mimedb, 'application/x-iso9660-image', '.iso')
+    add_mimetype(mimedb, 'application/zip', '.epub')
+    add_mimetype(mimedb, 'application/zip', '.apk')
+    add_mimetype(mimedb, 'application/zpaq', '.zpaq')
 
 
 def add_mimetype(mimedb, mimetype, extension):
@@ -351,6 +354,7 @@ FileText2Mime = {
     "Monkey's Audio": "audio/x-ape",
     "FLAC audio bitstream data": "audio/flac",
     "MS Windows HtmlHelp Data": "application/x-chm",
+    "ZPAQ stream": "application/zpaq",
 }
 
 def guess_mime_file_text (file_prog, filename):
@@ -526,12 +530,19 @@ def strtimezone():
     return "%+04d" % (-zone//3600)
 
 
-def p7zip_supports_rar ():
+def p7zip_supports_rar():
     """Determine if the RAR codec is installed for 7z program."""
     if os.name == 'nt':
         # Assume RAR support is compiled into the binary.
         return True
-    return os.path.exists('/usr/lib/p7zip/Codecs/Rar29.so')
+    # the subdirectory and codec name
+    codecname = 'p7zip/Codecs/Rar29.so'
+    # search canonical user library dirs
+    for libdir in ('/usr/lib', '/usr/local/lib'):
+        fname = os.path.join(libdir, codecname)
+        if os.path.exists(fname):
+            return True
+    return False
 
 
 @memoized

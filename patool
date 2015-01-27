@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2013 Bastian Kleineidam
+# Copyright (C) 2010-2014 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -188,8 +188,11 @@ def main():
     try:
         argparser = create_argparser()
         args = argparser.parse_args()
+        if args.command is None:
+            # Python 3.3.1 under linux allows an empty command somehow
+            argparser.error("too few arguments")
         # run subcommand function
-        return globals()["run_%s" % args.command](args)
+        res = globals()["run_%s" % args.command](args)
     except KeyboardInterrupt:
         log_error("aborted")
         res = 1

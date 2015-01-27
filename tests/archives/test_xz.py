@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2013 Bastian Kleineidam
+# Copyright (C) 2010-2014 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,3 +30,8 @@ class TestXz (ArchiveTest):
         self.archive_test('t.txt.xz.foo')
         self.archive_extract('t.txt.xz.foo', check=Content.Singlefile)
 
+    @needs_program(program)
+    def test_lzma(self):
+        self.archive_test('t.txt.lzma')
+        self.archive_extract('t.txt.lzma', check=Content.Singlefile)
+        self.archive_create('t.txt.lzma', check=Content.Singlefile)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2012 Bastian Kleineidam
+# Copyright (C) 2010-2014 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +28,11 @@ class TestUnzip (ArchiveTest):
         self.archive_extract('t.jar', check=None)
         self.archive_list('t.jar')
         self.archive_test('t.jar')
+        self.archive_extract('t.epub', check=None)
+        self.archive_list('t.epub')
+        self.archive_test('t.epub')
+        self.archive_list('t.apk')
+        self.archive_test('t.apk')
 
     @needs_program('file')
     @needs_program(program)
@@ -38,4 +43,8 @@ class TestUnzip (ArchiveTest):
         self.archive_extract('t.jar.foo', check=None)
         self.archive_list('t.jar.foo')
         self.archive_test('t.jar.foo')
-
+        self.archive_extract('t.epub.foo', check=None)
+        self.archive_list('t.epub.foo')
+        self.archive_test('t.epub.foo')
+        self.archive_list('t.apk.foo')
+        self.archive_test('t.apk.foo')

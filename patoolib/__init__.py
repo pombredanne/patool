@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2013 Bastian Kleineidam
+# Copyright (C) 2010-2014 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ ArchiveFormats = (
     'bzip2', 'cab', 'chm', 'compress', 'cpio', 'deb', 'dms',
     'flac', 'gzip', 'iso', 'lrzip', 'lzh', 'lzip', 'lzma', 'lzop',
     'rar', 'rpm', 'rzip', 'shar', 'shn', 'tar', 'xz',
-    'zip', 'zoo')
+    'zip', 'zoo', 'zpaq')
 
 # Supported compressions (used with tar for example)
 # Note that all compressions must also be archive formats
@@ -80,6 +80,7 @@ ArchiveMimetypes = {
     'application/x-zip-compressed': 'zip',
     'application/x-zoo': 'zoo',
     'application/zip': 'zip',
+    'application/zpaq': 'zpaq',
     'audio/x-ape': 'ape',
     'audio/x-shn': 'shn',
     'audio/flac': 'flac',
@@ -226,10 +227,10 @@ ArchivePrograms = {
         None: ('lzop',),
     },
     'lzma': {
-        'extract': ('7z', 'lzma') + py_lzma,
+        'extract': ('7z', 'lzma', 'xz') + py_lzma,
         'list': ('7z', 'py_echo'),
-        'test': ('7z', 'lzma'),
-        'create': ('lzma',) + py_lzma,
+        'test': ('7z', 'lzma', 'xz'),
+        'create': ('lzma', 'xz') + py_lzma,
     },
     'rzip': {
         'extract': ('rzip',),
@@ -252,6 +253,9 @@ ArchivePrograms = {
     },
     'zoo': {
         None: ('zoo',),
+    },
+    'zpaq': {
+        None: ('zpaq',),
     },
     'dms': {
         'extract': ('xdms',),
@@ -385,7 +389,7 @@ def move_outdir_orphan (outdir):
     if len(entries) == 1:
         src = os.path.join(outdir, entries[0])
         dst = os.path.join(os.path.dirname(outdir), entries[0])
-        if os.path.exists(dst):
+        if os.path.exists(dst) or os.path.islink(dst):
             return (False, "local file exists")
         shutil.move(src, dst)
         os.rmdir(outdir)

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-1 -*-
-# Copyright (C) 2010-2013 Bastian Kleineidam
+# Copyright (C) 2010-2014 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -44,13 +44,12 @@ try:
 except ImportError:
     from distutils.core import Distribution
     executables = None
-from distutils.command.register import register
 from distutils.command.install_lib import install_lib
 from distutils import util
 from distutils.file_util import write_file
 
-AppName = "Patool"
-AppVersion = "1.4"
+AppName = "patool"
+AppVersion = "1.8"
 MyName = "Bastian Kleineidam"
 MyEmail = "bastian.kleineidam@web.de"
 
@@ -207,7 +206,10 @@ class MyInstallLib (install_lib, object):
     def get_outputs (self):
         """Add the generated config file to the list of outputs."""
         outs = super(MyInstallLib, self).get_outputs()
-        outs.append(self.get_conf_output())
+        conf_output = self.get_conf_output()
+        outs.append(conf_output)
+        if self.compile:
+            outs.extend(self._bytecode_filenames([conf_output]))
         return outs
 
 
@@ -269,7 +271,6 @@ class InnoScript:
         if not self.dist_dir[-1] in "\\/":
             self.dist_dir += "\\"
         self.name = AppName
-        self.lname = AppName.lower()
         self.version = AppVersion
         self.windows_exe_files = [self.chop(p) for p in windows_exe_files]
         self.console_exe_files = [self.chop(p) for p in console_exe_files]
@@ -359,7 +360,7 @@ end;
     def sign (self):
         """Sign InnoSetup installer with local self-signed certificate."""
         print("*** signing the inno setup installer ***")
-        pfxfile = r'C:\%s.pfx' % self.lname
+        pfxfile = r'scripts\%s.pfx' % self.name
         if os.path.isfile(pfxfile):
             path = get_windows_sdk_path()
             signtool = os.path.join(path, "bin", "signtool.exe")
@@ -413,16 +414,6 @@ except ImportError:
         pass
 
 
-class MyRegister (register, object):
-    """Custom register command."""
-
-    def build_post_data(self, action):
-        """Force application name to lower case."""
-        data = super(MyRegister, self).build_post_data(action)
-        data['name'] = data['name'].lower()
-        return data
-
-
 args = dict(
     name = AppName,
     version = AppVersion,
@@ -440,8 +431,8 @@ AR (.a), ARC (.arc), ARJ (.arj), BZIP2 (.bz2),
 CAB (.cab), COMPRESS (.Z), CPIO (.cpio),
 DEB (.deb), DMS (.dms), FLAC (.flac), GZIP (.gz), ISO (.iso), LRZIP (.lrz),
 LZH (.lha, .lzh), LZIP (.lz), LZMA (.lzma), LZOP (.lzo), RPM (.rpm),
-RAR (.rar), RZIP (.rz), SHN (.shn), TAR (.tar), XZ (.xz), ZIP (.zip, .jar)
-and ZOO (.zoo) formats.
+RAR (.rar), RZIP (.rz), SHN (.shn), TAR (.tar), XZ (.xz), ZIP (.zip, .jar),
+ZOO (.zoo) and ZPAQ (.zpaq) formats.
 It relies on helper applications to handle those archive formats
 (for example bzip2 for BZIP2 archives).
 
@@ -471,7 +462,6 @@ installed.
     cmdclass = {
         'install_lib': MyInstallLib,
         'py2exe': MyPy2exe,
-        'register': MyRegister,
     },
     options = {
         "py2exe": py2exe_options,

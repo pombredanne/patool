@@ -27,12 +27,25 @@ applications to be installed.
 Examples
 ---------
 ```
+# Extract several archives with different formats
 patool extract archive.zip otherarchive.rar
+
+# Test archive integrity
 patool test --verbose dist.tar.gz
+
+# List files stored in an archive
 patool list package.deb
+
+# Create a new archive
 patool create --verbose /path/to/myfiles.zip file1.txt dir/
+
+# Show differences between two archives
 patool diff release1.0.tar.gz release2.0.zip
+
+# Search for text inside archives
 patool search "def urlopen" python-3.3.tar.gz
+
+# Repackage an archive in a different format
 patool repack linux-2.6.33.tar.gz linux-2.6.33.tar.bz2
 ```
 
@@ -45,6 +58,8 @@ API
 You can use patool functions from other Python applications.
 Log output will be on sys.stdout and sys.stderr.
 On errors, `PatoolError` will be raised.
+Note that extra options such as password input or customization
+for specific archive programs are not supported.
 
 ```
 import patoolib
