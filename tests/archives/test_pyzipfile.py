@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2012 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,8 +22,10 @@ class TestPyzipfile (ArchiveTest):
 
     def test_py_zipfile(self):
         self.archive_commands('t.zip')
+        self.archive_commands('t.cbz')
 
     @needs_program('file')
     def test_py_zipfile_file(self):
         self.archive_commands('t.zip.foo', skip_create=True)
+        self.archive_commands('t.cbz.foo', skip_create=True)
 

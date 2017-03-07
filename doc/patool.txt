@@ -1,4 +1,4 @@
-PATOOL(1)                                                    PATOOL(1)
+PATOOL(1)               General Commands Manual              PATOOL(1)
 
 
 
@@ -7,30 +7,32 @@ NAME
 
 SYNOPSIS
         patool         [global-options]        (list|test|extract|cre‐
-       ate|diff|search|repack|formats)   [command-options]   <command-
-       arguments>...
+       ate|diff|search|repack|recompressfP|formats)  [command-options]
+       <command-arguments>...
 
 DESCRIPTION
        Various  archive  formats  can  be  created, extracted, tested,
-       listed, searched, repacked and compared by patool.  The  advan‐
-       tage  of  patool  is  its  simplicity in handling archive files
-       without having to remember a myriad of programs and options.
+       listed,  searched,  repacked,  recompressed  and  compared   by
+       patool.  The  advantage of patool is its simplicity in handling
+       archive files without having to remember a myriad  of  programs
+       and options.
 
-       The archive format is determined by the file(1) program and  as
+       The  archive format is determined by the file(1) program and as
        a fallback by the archive file extension.
 
-       patool supports 7z (.7z), ACE (.ace), ADF (.adf), ALZIP (.alz),
-       APE (.ape), AR (.a), ARC (.arc), ARJ (.arj), BZIP2 (.bz2),  CAB
-       (.cab),  COMPRESS  (.Z),  CPIO (.cpio), DEB (.deb), DMS (.dms),
-       FLAC (.flac), GZIP (.gz), ISO (.iso), LRZIP (.lrz), LZH  (.lha,
-       .lzh),  LZIP  (.lz), LZMA (.lzma), LZOP (.lzo), RPM (.rpm), RAR
-       (.rar), RZIP (.rz), SHN  (.shn),  TAR  (.tar),  XZ  (.xz),  ZIP
-       (.zip,  .jar)  and  ZOO  (.zoo)  formats.   It relies on helper
-       applications to handle those archive formats (for example bzip2
-       for BZIP2 archives).
+       patool supports 7z (.7z, .cb7), ACE (.ace, .cba),  ADF  (.adf),
+       ALZIP  (.alz),  APE  (.ape),  AR  (.a), ARC (.arc), ARJ (.arj),
+       BZIP2 (.bz2), CAB (.cab),  COMPRESS  (.Z),  CPIO  (.cpio),  DEB
+       (.deb), DMS (.dms), FLAC (.flac), GZIP (.gz), ISO (.iso), LRZIP
+       (.lrz), LZH  (.lha,  .lzh),  LZIP  (.lz),  LZMA  (.lzma),  LZOP
+       (.lzo),  RPM  (.rpm), RAR (.rar, .cbr), RZIP (.rz), SHN (.shn),
+       TAR (.tar, .cbt), XZ (.xz), ZIP (.zip, .jar, .cbz), ZOO  (.zoo)
+       and ZPAQ (.zpaq) archive formats.
+       It  relies  on helper applications to handle those archive for‐
+       mats (for example bzip2 for BZIP2 archives).
 
-       The  archive  formats  TAR,  ZIP,  BZIP2 and GZIP are supported
-       natively  and  do  not  require  helper  applications   to   be
+       The archive formats TAR, ZIP,  BZIP2  and  GZIP  are  supported
+       natively   and   do  not  require  helper  applications  to  be
        installed.
 
 EXAMPLES
@@ -41,12 +43,22 @@ EXAMPLES
          patool diff release1.0.tar.xz release2.0.zip
          patool search "def urlopen" python-3.3.tar.gz
          patool repack linux-2.6.33.tar.gz linux-2.6.33.tar.bz2
+         patool recompress images.zip
 
 GLOBAL OPTIONS
        -v, --verbose
-              Display  more  info  about what patool does, and display
+              Display more info about what patool  does,  and  display
               the output of helper applications. Can be given multiple
               times to increase the output even more.
+
+       --non-interactive
+              Try to prevent any interactive user input (ie. prompting
+              for  passwords  or for overwriting duplicate files). Use
+              this option with care since overwriting files or  ignor‐
+              ing  password  prompts  could  lead to unintended conse‐
+              quences.
+              This only works for programs that allow preventing  user
+              prompts. Currently those are arj, 7z and rar.
 
 COMMANDS
        The following rules apply to all commands:
@@ -94,12 +106,13 @@ COMMANDS
        Create an archive from given files. All of the given  files  to
        add  to  the archive must be readable by the current user.  The
        format of the archive to create is determined  by  the  archive
-       file extension.
+       file  extension. If the archive program has options to maximize
+       file compression, patool uses those options.
 
    test
        patool test <archive>...
 
-       Test  the  given  archives.  If the helper application does not
+       Test the given archives. If the  helper  application  does  not
        support testing, the archive contents are listed instead.
 
    diff
@@ -111,15 +124,21 @@ COMMANDS
    search
        patool search <pattern> <archive>
 
-       Search  in archive contents for given pattern using the grep(1)
-       program.  The grep options used are -r; additional options  can
+       Search in archive contents for given pattern using the  grep(1)
+       program.   The grep options used are -r; additional options can
        be supplied with the GREP_OPTIONS environment variable.
 
    repack
        patool repack <archive> <archive_new>
 
-       Repackage  archive  to  a  different format. The target archive
+       Repackage archive to a different  format.  The  target  archive
        format is determined by the file extension of archive_new.
+
+   recompress
+       patool recompress <archive>
+
+       Recompress  archive  to  a  smaller file size. If the resulting
+       file is not smaller, the archive is left unchanged.
 
    formats
        patool formats
@@ -146,7 +165,7 @@ AUTHOR
        Bastian Kleineidam <bastian.kleineidam@web.de>
 
 COPYRIGHT
-       Copyright © 2010-2014 Bastian Kleineidam
+       Copyright © 2010-2016 Bastian Kleineidam
 
 
 

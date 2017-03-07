@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@ class Test7za (ArchiveTest):
     @needs_program(program)
     def test_p7azip (self):
         self.archive_commands('t .7z')
+        self.archive_commands('t .cb7')
         self.archive_commands('t.zip')
+        self.archive_commands('t.cbz')
         self.archive_list('t.txt.gz')
         self.archive_list('t.txt.bz2')
         self.archive_list('t.jar')
@@ -41,12 +43,15 @@ class Test7za (ArchiveTest):
         self.archive_test('t.txt.Z')
         self.archive_test('t.cab')
         self.archive_create('t.txt.gz', check=Content.Singlefile)
+        self.archive_create('t.txt.bz2', check=Content.Singlefile)
 
     @needs_program('file')
     @needs_program(program)
     def test_7za_file (self):
         self.archive_commands('t.7z.foo', skip_create=True)
+        self.archive_commands('t.cb7.foo', skip_create=True)
         self.archive_commands('t.zip.foo', skip_create=True)
+        self.archive_commands('t.cbz.foo', skip_create=True)
         self.archive_list('t.txt.gz.foo')
         self.archive_list('t.txt.bz2.foo')
         self.archive_list('t.jar.foo')

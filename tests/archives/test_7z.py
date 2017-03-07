@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,7 +23,9 @@ class Test7z (ArchiveTest):
     @needs_program(program)
     def test_7z (self):
         self.archive_commands('t .7z')
+        self.archive_commands('t .cb7')
         self.archive_commands('t.zip')
+        self.archive_commands('t.cbz')
         self.archive_commands('t.txt.xz', check=Content.Singlefile)
         self.archive_list('t.txt.gz')
         self.archive_list('t.txt.bz2')
@@ -36,6 +38,7 @@ class Test7z (ArchiveTest):
         self.archive_list('t.rpm')
         self.archive_list('t.deb')
         self.archive_list('t.iso')
+        self.archive_list('t.vhd')
         self.archive_extract('t.txt.gz', check=Content.Singlefile)
         self.archive_extract('t.txt.bz2', check=Content.Singlefile)
         self.archive_extract('t.txt.lzma', check=Content.Singlefile)
@@ -47,6 +50,7 @@ class Test7z (ArchiveTest):
         self.archive_extract('t.rpm', check=None)
         self.archive_extract('t.deb', check=None)
         self.archive_extract('t.iso')
+        self.archive_extract('t.vhd', check=None)
         self.archive_test('t.txt.gz')
         self.archive_test('t.txt.bz2')
         self.archive_test('t.txt.lzma')
@@ -58,7 +62,9 @@ class Test7z (ArchiveTest):
         self.archive_test('t.rpm')
         self.archive_test('t.deb')
         self.archive_test('t.iso')
+        self.archive_test('t.vhd')
         self.archive_create('t.txt.gz', check=Content.Singlefile)
+        self.archive_create('t.txt.bz2', check=Content.Singlefile)
 
     @needs_codec(program, 'rar')
     def test_7z_rar (self):
@@ -71,7 +77,9 @@ class Test7z (ArchiveTest):
     @needs_program(program)
     def test_7z_file (self):
         self.archive_commands('t.7z.foo', skip_create=True)
+        self.archive_commands('t.cb7.foo', skip_create=True)
         self.archive_commands('t.zip.foo', skip_create=True)
+        self.archive_commands('t.cbz.foo', skip_create=True)
         self.archive_commands('t.txt.xz.foo', skip_create=True, check=Content.Singlefile)
         self.archive_list('t.txt.gz.foo')
         self.archive_list('t.txt.bz2.foo')

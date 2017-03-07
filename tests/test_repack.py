@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,8 +28,8 @@ class ArchiveRepackTest (unittest.TestCase):
         tmpdir = util.tmpdir()
         try:
             archive2 = os.path.join(tmpdir, name2)
-            util.run_checked([sys.executable, patool_cmd, "-vv", "repack", archive1, archive2])
-            util.run_checked([sys.executable, patool_cmd, "diff", archive1, archive2])
+            util.run_checked([sys.executable, patool_cmd, "-vv", "--non-interactive", "repack", archive1, archive2])
+            util.run_checked([sys.executable, patool_cmd, "--non-interactive", "diff", archive1, archive2])
         finally:
             shutil.rmtree(tmpdir)
 

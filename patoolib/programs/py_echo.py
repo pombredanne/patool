@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ from __future__ import print_function
 from .. import util
 
 
-def list_bzip2 (archive, compression, cmd, verbosity):
+def list_bzip2 (archive, compression, cmd, verbosity, interactive):
     """List a BZIP2 archive."""
     return stripext(cmd, archive, verbosity)
 
@@ -31,7 +31,7 @@ list_compress = \
   list_rzip = \
   list_bzip2
 
-def list_ape (archive, compression, cmd, verbosity):
+def list_ape (archive, compression, cmd, verbosity, interactive):
     """List an APE archive."""
     return stripext(cmd, archive, verbosity, extension=".wav")
 

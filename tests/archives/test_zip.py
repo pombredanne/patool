@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2012 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,8 +24,20 @@ class TestZip (ArchiveTest):
     def test_zip (self):
         self.archive_create('t.zip')
         self.archive_test('t.zip')
+        self.archive_create('t.cbz')
+        self.archive_test('t.cbz')
+        self.archive_create('t.apk')
+        self.archive_test('t.apk')
+        self.archive_create('t.jar')
+        self.archive_test('t.jar')
+        self.archive_create('t.epub')
+        self.archive_test('t.epub')
 
     @needs_program('file')
     @needs_program(program)
     def test_zip_file (self):
         self.archive_test('t.zip.foo')
+        self.archive_test('t.cbz.foo')
+        self.archive_test('t.apk.foo')
+        self.archive_test('t.jar.foo')
+        self.archive_test('t.epub.foo')

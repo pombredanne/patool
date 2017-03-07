@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013-2014 Bastian Kleineidam
+# Copyright (C) 2013-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,4 +24,4 @@ class ArchiveTestTest (unittest.TestCase):
     @needs_program('7z')
     def test_test(self):
         archive = os.path.join(datadir, "t .7z")
-        run_checked([sys.executable, patool_cmd, "test", archive])
+        run_checked([sys.executable, patool_cmd, "--non-interactive", "test", archive])

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +46,8 @@ class TestMime (unittest.TestCase):
     @needs_program('file')
     def test_mime_file (self):
         self.mime_test_file("t .7z", "application/x-7z-compressed")
-        self.mime_test_file("t.7z.foo", "application/x-7z-compressed")
+        self.mime_test_file("t .cb7", "application/x-7z-compressed")
+        self.mime_test_file("t.cb7.foo", "application/x-7z-compressed")
         self.mime_test_file("t.arj", "application/x-arj")
         self.mime_test_file("t.arj.foo", "application/x-arj")
         self.mime_test_file("t.txt.bz2", "application/x-bzip2")
@@ -69,10 +70,14 @@ class TestMime (unittest.TestCase):
         self.mime_test_file("t.txt.lzo.foo", "application/x-lzop")
         self.mime_test_file("t.rar", "application/x-rar")
         self.mime_test_file("t.rar.foo", "application/x-rar")
+        self.mime_test_file("t.cbr", "application/x-rar")
+        self.mime_test_file("t.cbr.foo", "application/x-rar")
         self.mime_test_file("t.rpm", "application/x-rpm")
         self.mime_test_file("t.rpm.foo", "application/x-rpm")
         self.mime_test_file("t.tar", "application/x-tar")
         self.mime_test_file("t.tar.foo", "application/x-tar")
+        self.mime_test_file("t.cbt", "application/x-tar")
+        self.mime_test_file("t.cbt.foo", "application/x-tar")
         self.mime_test_file("t.tar.lz", "application/x-tar", "lzip")
         self.mime_test_file("t.tar.bz2", "application/x-tar", "bzip2")
         self.mime_test_file("t.tbz2", "application/x-tar", "bzip2")
@@ -92,8 +97,12 @@ class TestMime (unittest.TestCase):
         self.mime_test_file("t.jar.foo", "application/zip")
         self.mime_test_file("t.zip", "application/zip")
         self.mime_test_file("t.zip.foo", "application/zip")
+        self.mime_test_file("t.cbz", "application/zip")
+        self.mime_test_file("t.cbz.foo", "application/zip")
         self.mime_test_file("t.ace", "application/x-ace")
         self.mime_test_file("t.ace.foo", "application/x-ace")
+        self.mime_test_file("t.cba", "application/x-ace")
+        self.mime_test_file("t.cba.foo", "application/x-ace")
         self.mime_test_file("t.txt.a", "application/x-archive")
         self.mime_test_file("t.txt.a.foo", "application/x-archive")
         self.mime_test_file("t.lha", "application/x-lha")
@@ -125,7 +134,7 @@ class TestMime (unittest.TestCase):
         self.mime_test_file("t.chm.foo", "application/x-chm")
         self.mime_test_file("t.iso", "application/x-iso9660-image")
         self.mime_test_file("t.epub", "application/zip")
-        self.mime_test_file("t.apk", "application/zip")
+        self.mime_test_file("t.apk", ("application/zip", "application/java-archive"))
         self.mime_test_file("t.zpaq", "application/zpaq")
         self.mime_test_file("t.zpaq.foo", "application/zpaq")
 
@@ -159,9 +168,11 @@ class TestMime (unittest.TestCase):
 
     def test_mime_mimedb (self):
         self.mime_test_mimedb("t .7z", "application/x-7z-compressed")
+        self.mime_test_mimedb("t .cb7", "application/x-7z-compressed")
         self.mime_test_mimedb("t.arj", "application/x-arj")
         self.mime_test_mimedb("t .bz2", "application/x-bzip2")
         self.mime_test_mimedb("t.cab", "application/x-cab")
+        self.mime_test_mimedb("t.cbr", ("application/rar", "application/x-rar"))
         self.mime_test_mimedb("t.cpio", "application/x-cpio")
         self.mime_test_mimedb("t.deb", "application/x-debian-package")
         self.mime_test_mimedb("t.gz", "application/gzip")
@@ -172,6 +183,7 @@ class TestMime (unittest.TestCase):
         self.mime_test_mimedb("t.rar", ("application/rar", "application/x-rar"))
         self.mime_test_mimedb("t.rpm", ("application/x-redhat-package-manager", "application/x-rpm"))
         self.mime_test_mimedb("t.tar", "application/x-tar")
+        self.mime_test_mimedb("t.cbt", "application/x-tar")
         self.mime_test_mimedb("t.tar.bz2", "application/x-tar", "bzip2")
         self.mime_test_mimedb("t.tar.gz", "application/x-tar", "gzip")
         self.mime_test_mimedb("t.tar.lzma", "application/x-tar", "lzma")
@@ -182,10 +194,13 @@ class TestMime (unittest.TestCase):
         self.mime_test_mimedb("t.tbz2", "application/x-tar", "bzip2")
         self.mime_test_mimedb("t.tgz", "application/x-tar", "gzip")
         self.mime_test_mimedb("t.txt.gz", "application/gzip")
+        self.mime_test_mimedb("t.txt.bz2", "application/x-bzip2")
         self.mime_test_mimedb("t .xz", "application/x-xz")
         self.mime_test_mimedb("t.Z", "application/x-compress")
         self.mime_test_mimedb("t.zip", ("application/zip", "application/x-zip-compressed"))
+        self.mime_test_mimedb("t.cbz", ("application/zip", "application/x-zip-compressed"))
         self.mime_test_mimedb("t.ace", "application/x-ace")
+        self.mime_test_mimedb("t.cba", "application/x-ace")
         self.mime_test_mimedb("t.a", "application/x-archive")
         self.mime_test_mimedb("t.lha", "application/x-lha")
         self.mime_test_mimedb("t.lzh", "application/x-lzh")
@@ -204,4 +219,5 @@ class TestMime (unittest.TestCase):
         self.mime_test_mimedb("t.iso", "application/x-iso9660-image")
         self.mime_test_mimedb("t.epub", "application/zip")
         self.mime_test_mimedb("t.apk", "application/zip")
+        self.mime_test_mimedb("t.vhd", "application/x-vhd")
         self.mime_test_mimedb("t.zpaq", "application/zpaq")

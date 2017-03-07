@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013-2014 Bastian Kleineidam
+# Copyright (C) 2013-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,4 +32,4 @@ class ArchiveSearchTest (unittest.TestCase):
         self.search(pattern, archive)
 
     def search(self, pattern, archive):
-        run_checked([sys.executable, patool_cmd, "-vv", "search", pattern, archive])
+        run_checked([sys.executable, patool_cmd, "-vv", "--non-interactive", "search", pattern, archive])

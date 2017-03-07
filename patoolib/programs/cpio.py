@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@ import os
 import sys
 from .. import util
 
-def extract_cpio (archive, compression, cmd, verbosity, outdir):
+def extract_cpio (archive, compression, cmd, verbosity, interactive, outdir):
     """Extract a CPIO archive."""
     cmdlist = [util.shell_quote(cmd), '--extract', '--make-directories',
         '--preserve-modification-time']
@@ -31,7 +31,7 @@ def extract_cpio (archive, compression, cmd, verbosity, outdir):
     return (cmdlist, {'cwd': outdir, 'shell': True})
 
 
-def list_cpio (archive, compression, cmd, verbosity):
+def list_cpio (archive, compression, cmd, verbosity, interactive):
     """List a CPIO archive."""
     cmdlist = [cmd, '-i', '-t']
     if verbosity > 1:
@@ -41,7 +41,7 @@ def list_cpio (archive, compression, cmd, verbosity):
 
 test_cpio = list_cpio
 
-def create_cpio(archive, compression, cmd, verbosity, filenames):
+def create_cpio(archive, compression, cmd, verbosity, interactive, filenames):
     """Create a CPIO archive."""
     cmdlist = [util.shell_quote(cmd), '--create']
     if verbosity > 1:

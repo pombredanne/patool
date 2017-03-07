@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013-2014 Bastian Kleineidam
+# Copyright (C) 2013-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,6 +27,6 @@ class ArchiveExtractTest (unittest.TestCase):
         tmpdir = util.tmpdir(dir=basedir)
         try:
             archive = os.path.join(datadir, "t .7z")
-            util.run_checked([sys.executable, patool_cmd, "-vv", "extract", "--outdir", tmpdir, archive])
+            util.run_checked([sys.executable, patool_cmd, "-vv", "--non-interactive", "extract", "--outdir", tmpdir, archive])
         finally:
             shutil.rmtree(tmpdir)

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013-2014 Bastian Kleineidam
+# Copyright (C) 2013-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ class ArchiveCreateTest (unittest.TestCase):
         try:
             files = [os.path.join(datadir, "t"), os.path.join(datadir, "t.txt")]
             archive = os.path.join(tmpdir, "t.7z")
-            cmd = [sys.executable, patool_cmd, "-vv", "create", archive]
+            cmd = [sys.executable, patool_cmd, "-vv", "--non-interactive", "create", archive]
             cmd.extend(files)
             util.run_checked(cmd)
         finally:

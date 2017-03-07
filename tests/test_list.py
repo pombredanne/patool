@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2013-2014 Bastian Kleineidam
+# Copyright (C) 2013-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,4 +24,4 @@ class ArchiveListTest (unittest.TestCase):
     @needs_program('tar')
     def test_list(self):
         archive = os.path.join(datadir, "t.tar")
-        run_checked([sys.executable, patool_cmd, "-vv", "list", archive])
+        run_checked([sys.executable, patool_cmd, "-vv", "--non-interactive", "list", archive])

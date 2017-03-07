@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2014 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import mimetypes
 import tempfile
 import time
 import traceback
+import locale
 from . import configuration, ArchiveMimetypes, ArchiveCompressions
 try:
     from shutil import which
@@ -80,6 +81,14 @@ except ImportError:
         return None
 
 
+def system_search_path():
+    """Get the list of directories on a system to search for executable programs.
+    It is either the PATH environment variable or if PATH is undefined the value
+    of os.defpath.
+    """
+    return os.environ.get("PATH", os.defpath)
+
+
 # internal MIME database
 mimedb = None
 
@@ -108,11 +117,14 @@ def add_mimedb_data(mimedb):
     add_mimetype(mimedb, 'application/x-xz', '.xz')
     add_mimetype(mimedb, 'application/java-archive', '.jar')
     add_mimetype(mimedb, 'application/x-rar', '.rar')
+    add_mimetype(mimedb, 'application/x-rar', '.cbr')
     add_mimetype(mimedb, 'application/x-7z-compressed', '.7z')
+    add_mimetype(mimedb, 'application/x-7z-compressed', '.cb7')
     add_mimetype(mimedb, 'application/x-cab', '.cab')
     add_mimetype(mimedb, 'application/x-rpm', '.rpm')
     add_mimetype(mimedb, 'application/x-debian-package', '.deb')
     add_mimetype(mimedb, 'application/x-ace', '.ace')
+    add_mimetype(mimedb, 'application/x-ace', '.cba')
     add_mimetype(mimedb, 'application/x-archive', '.a')
     add_mimetype(mimedb, 'application/x-alzip', '.alz')
     add_mimetype(mimedb, 'application/x-arc', '.arc')
@@ -124,11 +136,14 @@ def add_mimedb_data(mimedb):
     add_mimetype(mimedb, 'application/x-dms', '.dms')
     add_mimetype(mimedb, 'application/x-zip-compressed', '.crx')
     add_mimetype(mimedb, 'application/x-shar', '.shar')
+    add_mimetype(mimedb, 'application/x-tar', '.cbt')
+    add_mimetype(mimedb, 'application/x-vhd', '.vhd')
     add_mimetype(mimedb, 'audio/x-ape', '.ape')
     add_mimetype(mimedb, 'audio/x-shn', '.shn')
     add_mimetype(mimedb, 'audio/flac', '.flac')
     add_mimetype(mimedb, 'application/x-chm', '.chm')
     add_mimetype(mimedb, 'application/x-iso9660-image', '.iso')
+    add_mimetype(mimedb, 'application/zip', '.cbz')
     add_mimetype(mimedb, 'application/zip', '.epub')
     add_mimetype(mimedb, 'application/zip', '.apk')
     add_mimetype(mimedb, 'application/zpaq', '.zpaq')
@@ -283,7 +298,12 @@ def guess_mime_file (filename):
             # ignore errors, as file(1) is only a fallback
             return mime, encoding
         mime2 = outparts[0].split(" ", 1)[0]
-        if mime2 in ('application/x-empty', 'application/octet-stream'):
+        # Some file(1) implementations return an empty or unknown mime type
+        # when the uncompressor program is not installed, other
+        # implementation return the original file type.
+        # The following detects both cases.
+        if (mime2 in ('application/x-empty', 'application/octet-stream') or
+            mime2 in Mime2Encoding):
             # The uncompressor program file(1) uses is not installed
             # or is not able to uncompress.
             # Try to get mime information from the file extension.
@@ -382,6 +402,12 @@ def check_existing_filename (filename, onlyfiles=True):
         raise PatoolError("`%s' is not a file" % filename)
 
 
+def check_writable_filename(filename):
+    """Ensure that the given filename is writable."""
+    if not os.access(filename, os.W_OK):
+        raise PatoolError("file `%s' is not writable" % filename)
+
+
 def check_new_filename (filename):
     """Check that filename does not already exist."""
     if os.path.exists(filename):
@@ -408,6 +434,31 @@ def set_mode (filename, flags):
             os.chmod(filename, flags | mode)
         except OSError as msg:
             log_error("could not set mode flags for `%s': %s" % (filename, msg))
+
+
+def get_filesize(filename):
+    """Return file size in Bytes, or -1 on error."""
+    return os.path.getsize(filename)
+
+
+def strsize(b, grouping=True):
+    """Return human representation of bytes b. A negative number of bytes
+    raises a value error."""
+    if b < 0:
+        raise ValueError("Invalid negative byte number")
+    if b < 1024:
+        return u"%sB" % locale.format("%d", b, grouping)
+    if b < 1024 * 10:
+        return u"%sKB" % locale.format("%d", (b // 1024), grouping)
+    if b < 1024 * 1024:
+        return u"%sKB" % locale.format("%.2f", (float(b) / 1024), grouping)
+    if b < 1024 * 1024 * 10:
+        return u"%sMB" % locale.format("%.2f", (float(b) / (1024*1024)), grouping)
+    if b < 1024 * 1024 * 1024:
+        return u"%sMB" % locale.format("%.1f", (float(b) / (1024*1024)), grouping)
+    if b < 1024 * 1024 * 1024 * 10:
+        return u"%sGB" % locale.format("%.2f", (float(b) / (1024*1024*1024)), grouping)
+    return u"%sGB" % locale.format("%.1f", (float(b) / (1024*1024*1024)), grouping)
 
 
 def tmpdir (dir=None):
@@ -538,7 +589,7 @@ def p7zip_supports_rar():
     # the subdirectory and codec name
     codecname = 'p7zip/Codecs/Rar29.so'
     # search canonical user library dirs
-    for libdir in ('/usr/lib', '/usr/local/lib'):
+    for libdir in ('/usr/lib', '/usr/local/lib', '/usr/lib64', '/usr/local/lib64', '/usr/lib/i386-linux-gnu', '/usr/lib/x86_64-linux-gnu'):
         fname = os.path.join(libdir, codecname)
         if os.path.exists(fname):
             return True
@@ -549,9 +600,11 @@ def p7zip_supports_rar():
 def find_program (program):
     """Look for program in environment PATH variable."""
     if os.name == 'nt':
+        # Add some well-known archiver programs to the search path
         path = os.environ['PATH']
         path = append_to_path(path, get_nt_7z_dir())
         path = append_to_path(path, get_nt_mac_dir())
+        path = append_to_path(path, get_nt_winrar_dir())
     else:
         # use default path
         path = None
@@ -592,8 +645,13 @@ def get_nt_program_dir ():
 
 
 def get_nt_mac_dir ():
-    """Return Monkey Audio Compressor (MAC) directory, or an empty string."""
+    """Return Monkey Audio Compressor (MAC) directory."""
     return os.path.join(get_nt_program_dir(), "Monkey's Audio")
+
+
+def get_nt_winrar_dir():
+    """Return WinRAR directory."""
+    return os.path.join(get_nt_program_dir(), "WinRAR")
 
 
 def strlist_with_or (alist):
@@ -630,7 +688,7 @@ def link_or_copy(src, dst, verbosity=0):
         log_info("Copying %s -> %s" % (src, dst))
     try:
         os.link(src, dst)
-    except OSError:
+    except (AttributeError, OSError):
         try:
             shutil.copy(src, dst)
         except OSError as msg:

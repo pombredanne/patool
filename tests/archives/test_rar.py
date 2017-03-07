@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2010-2012 Bastian Kleineidam
+# Copyright (C) 2010-2016 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@ class TestRar (ArchiveTest):
     @needs_program(program)
     def test_rar(self):
         self.archive_commands('t.rar')
+        self.archive_commands('t.cbr')
 
     @needs_program('file')
     @needs_program(program)
     def test_rar_file(self):
         self.archive_commands('t.rar.foo', skip_create=True)
+        self.archive_commands('t.cbr.foo', skip_create=True)
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (C) 2014 Bastian Kleineidam
+# Copyright (C) 2014-2015 Bastian Kleineidam
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,24 +16,24 @@
 """Archive commands for the zpaq program."""
 import os
 
-def extract_zpaq(archive, compression, cmd, verbosity, outdir):
+def extract_zpaq(archive, compression, cmd, verbosity, interactive, outdir):
     """Extract a ZPAQ archive."""
     cmdlist = [cmd, 'x', os.path.abspath(archive)]
     return (cmdlist, {'cwd': outdir})
 
 
-def list_zpaq(archive, compression, cmd, verbosity):
+def list_zpaq(archive, compression, cmd, verbosity, interactive):
     """List a ZPAQ archive."""
     return [cmd, 'l', archive]
 
 
-def create_zpaq(archive, compression, cmd, verbosity, filenames):
+def create_zpaq(archive, compression, cmd, verbosity, interactive, filenames):
     """Create a ZPAQ archive."""
-    cmdlist = [cmd, 'c', archive]
+    cmdlist = [cmd, 'a', archive]
     cmdlist.extend(filenames)
+    cmdlist.extend(['-method', '4'])
     return cmdlist
 
+# zpaq has no separate test mode, so use listing instead
+test_zpaq = list_zpaq
 
-def test_zpaq(archive, compression, cmd, verbosity):
-    """Test a ZPAQ archive."""
-    return [cmd, 'l', archive]
